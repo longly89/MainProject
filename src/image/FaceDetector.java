@@ -7,6 +7,8 @@ import org.opencv.imgproc.Imgproc;
 
 
 public class FaceDetector {
+	//1677 x 3048
+	//720 x 1280
     public static void main(String[] args) {
     	 
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
@@ -33,7 +35,7 @@ public class FaceDetector {
         		if (red == 255.0 && green == 255.0 && blue == 255.0)
         			System.out.println(i + " " + j);
         	}
-        
+        System.out.println(image.rows() + " " + image.cols());
         
     }
 }

@@ -13,7 +13,7 @@ import com.github.sarxos.webcam.WebcamResolution;
 
 
 public class TakePicture {
-
+	//66 x 120 in
 	public static void main(String[] agrs) {
 		try {
 			ArrayList<Webcam> web = new ArrayList<Webcam>();
@@ -22,7 +22,7 @@ public class TakePicture {
 			for (Webcam cam: webcam) {
 				cam.setCustomViewSizes(new Dimension[] { WebcamResolution.HD720.getSize() });
 				cam.setViewSize(WebcamResolution.HD720.getSize());
-//				if (cam.getName().toLowerCase().contains("logitech"))
+				//if (cam.getName().toLowerCase().contains("logitech"))
 					web.add(cam);
 			}
 			
