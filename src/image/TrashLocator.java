@@ -1,4 +1,8 @@
 package image;
+import java.io.BufferedWriter;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 
 import org.opencv.core.Core;
@@ -12,6 +16,24 @@ public class TrashLocator {
 	//1677 x 3048
 	//720 x 1280
 	private static int move[][] = { {-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+	
+	private static void printmt (int mt[][]) {
+		try {
+			BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(new FileOutputStream("mt.txt")));
+			String s;
+			for (int i[]: mt) {
+				for (int j: i) {
+					s = String.format("%5d", j);
+					bw.write(s);
+				}
+				bw.newLine();
+			}
+			bw.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 	
 	private static int checkImage(Mat image, int r, int c) {
 		double[] rgb = image.get(r, c);
@@ -37,12 +59,24 @@ public class TrashLocator {
 		return b;
 	}
 	
+	//convert row and column in pixel to block
+	private static int[] getBlock(int r, int c) {
+		int rr = r / 80;
+		int cc = c / 80;
+		if (rr * 80 < r)
+			rr++;
+		if (cc * 80 < c)
+			cc++;
+		
+		return new int[] {rr, cc};
+	}
+	
 	private static void getSize() {
 		//area as pixel
 		double[] set = {120,20,120};
         Mat image = Highgui.imread("output.png");
         int[][] mt = new int[image.rows()][image.cols()];
-        int maxSize = 4000, r = 0, c = 0;
+        int maxSize = 1000, r = 0, c = 0;
         for (int i = 1; i < image.rows() - 1; i++) 
         	for (int j = 1; j < image.cols() - 1; j++) {
         		double[] rgb = image.get(i, j);
@@ -65,12 +99,14 @@ public class TrashLocator {
     				else
     					mt[i][j] = mt[i][j - 1] + mt[i - 1][j] - mt[i - 1][j - 1] + value;
     			
-    			if (mt[i][j] > maxSize && mt[i][j] <= 5000) {
+    			if (mt[i][j] > maxSize && mt[i][j] < 5000) {
     				maxSize = mt[i][j];
     				r = i;
     				c = j;
     			}
         	}
+        
+        printmt(mt);
         System.out.println(maxSize + " " + r + " " + c);
         
         //find center of object
@@ -82,6 +118,8 @@ public class TrashLocator {
         	for (int m[]: move) {
         		int rr = r + m[0];
         		int cc = c + m[1];
+        		if (rr < 0 || rr >= image.rows() || cc < 0 || cc >= image.cols())
+        			continue;
         		if (mt[rr][cc] == 0 && checkImage(image, rr, cc) == 1) {
         			row.add(rr);
         			col.add(cc);
@@ -107,22 +145,24 @@ public class TrashLocator {
         	col.remove(0);
         } 
         Highgui.imwrite("out.png", image);
-        
         System.out.printf("%d\t%d\t%d\t%d\n", minr, maxr, minc, maxc);
         System.out.printf("%d\t%d\n", (maxr + minr) / 2, (maxc + minc) / 2);
-		
-}
+        int[] loc = getBlock((maxr + minr) / 2, (maxc + minc) / 2);
+        System.out.printf("%d\t%d\n", loc[0] + 1, loc[1] + 1);
+	}
 	
     public static void main(String[] args) {
     	 
         System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
-        Mat image = Highgui.imread("Picture 4.jpg");
+        Mat image = Highgui.imread("Test 8.jpg");
         Mat HLS = new Mat(), threshold = new Mat();
         
         Imgproc.cvtColor(image, HLS, Imgproc.COLOR_BGR2HLS);
-        Core.inRange(HLS, new Scalar(60,170,10), new Scalar(150, 255, 50), threshold);
+        //Core.inRange(HLS, new Scalar(0,140,40), new Scalar(255, 255, 100), threshold);
+        //Core.inRange(HLS, new Scalar(0,100,0), new Scalar(255, 150, 100), threshold);
+        Core.inRange(HLS, new Scalar(50,20,0), new Scalar(100, 60, 100), threshold);
         
         Highgui.imwrite("output.png", threshold);
-        getSize();
+        //getSize();
     }
 }

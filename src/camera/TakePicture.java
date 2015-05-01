@@ -22,7 +22,7 @@ public class TakePicture {
 			for (Webcam cam: webcam) {
 				cam.setCustomViewSizes(new Dimension[] { WebcamResolution.HD720.getSize() });
 				cam.setViewSize(WebcamResolution.HD720.getSize());
-				//if (cam.getName().toLowerCase().contains("logitech"))
+				if (cam.getName().toLowerCase().contains("logitech"))
 					web.add(cam);
 			}
 			
@@ -34,7 +34,7 @@ public class TakePicture {
 				for (int i = 0; i < web.size(); i++ ) {
 					j++;
 					BufferedImage image = webcam.get(i).getImage();
-					ImageIO.write(image, "jpg", new File("Pic " + j + ".jpg"));
+					ImageIO.write(image, "jpg", new File("Test " + 12 + ".jpg"));
 				}
 			
 			

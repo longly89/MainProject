@@ -6,7 +6,15 @@ public class RouteOptimize {
 
 	private static int move[][] = { {-1, 0}, {1, 0}, {0, -1}, {0, 1}};
 	//real size 11x18
-	private static int row = 10, col = 10;
+	private static int row = 11, col = 18;
+	private static int pos[] = {7,6};
+	private static int dest[] = {3,9};
+	//up, down, left, right
+	//north, south, west, east
+	//0,		1,		2,	3
+	private static int orientation = 0;
+	private static int mt[][] = new int[row][col];
+	/*
 	private static int mt[][] = {	{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1},
 									{-1,0,0,0,0,0,-1,0,0,-1},
 									{-1,0,0,-1,0,-1,0,0,0,-1},
@@ -17,7 +25,7 @@ public class RouteOptimize {
 									{-1,0,0,0,0,0,0,-1,0,-1},
 									{-1,0,0,0,-1,0,0,0,0,-1},
 									{-1,-1,-1,-1,-1,-1,-1,-1,-1,-1}};
-
+*/
 	private static void init() {
 		//first row and last row fill with -1
 		//each other row, first column & last column fill with -1
@@ -28,7 +36,7 @@ public class RouteOptimize {
 		
 		for (int i = 1; i < row - 1; i++) { 
 			mt[i][0] = -1;
-			mt[i][col] = -1;
+			mt[i][col - 1] = -1;
 		}
 	}
 
@@ -45,8 +53,6 @@ public class RouteOptimize {
 		//0: accessible
 		//-1: inaccessible
 		//-2:goal
-		int pos[] = {3,4}; //row, col
-		int dest[] = {7,8};
 		mt[dest[0]][dest[1]] = 1;
 		mt[pos[0]][pos[1]] = -2;
 		
@@ -82,11 +88,6 @@ public class RouteOptimize {
 	}
 	
 	private static void backtracking() {
-		int pos[] = {3,4}; //row, col
-		//up, down, left, right
-		//north, south, west, east
-		//0,		1,		2,	3
-		int orientation = 0;
 		ArrayList<Character> command = new ArrayList<Character>();
 		
 		for (int i = mt[pos[0]][pos[1]] - 1; i > 0; i--) {
@@ -113,7 +114,7 @@ public class RouteOptimize {
 						case 2: command.add('L'); break;
 						case 3: command.add('R'); break;
 					}
-					command.add('S');
+					command.add('F');
 					break;
 				case 1: //south
 					switch (k) {
@@ -121,7 +122,7 @@ public class RouteOptimize {
 						case 2: command.add('R'); break;
 						case 3: command.add('L'); break;
 					}
-					command.add('S');
+					command.add('F');
 					break;
 				case 2: //west
 					switch (k) {
@@ -129,7 +130,7 @@ public class RouteOptimize {
 						case 1: command.add('L'); break;
 						case 3: command.add('L'); command.add('L'); break;
 					}
-					command.add('S');
+					command.add('F');
 					break;
 				case 3: //east
 					switch (k) {
@@ -137,7 +138,7 @@ public class RouteOptimize {
 						case 1: command.add('R'); break;
 						case 2: command.add('L'); command.add('L'); break;
 					}
-					command.add('S');
+					command.add('F');
 					break;
 			}
 			
@@ -148,6 +149,7 @@ public class RouteOptimize {
 	}
 	
 	public static void main(String arg[]) {
+		init();
 		optimize();
 		backtracking();
 	}
